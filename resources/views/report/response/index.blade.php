@@ -77,7 +77,7 @@
                     @foreach ($reports as $report)
                         <tr class="hover:bg-gray-700 transition-colors">
                             <td class="px-6 py-4 border-b flex items-center space-x-4">
-                                <img src="https://via.placeholder.com/40" alt="Foto Profil"
+                                <img src="{{ asset('user-icon.png') }}" alt="Foto Profil"
                                     class="w-10 h-10 rounded-full border">
                                 <span class="text-sm text-white">{{ $report->user->email }}</span>
                             </td>
@@ -91,7 +91,7 @@
                                 {{ implode(' ', array_slice(explode(' ', $report->description), 0, 5)) }}...
                             </td>
                             <td class="px-6 py-4 border-b text-center text-sm text-white">
-                                {{ count(json_decode($report->voting, true)) }}</td>
+                                {{ is_array($report->voting) ? count($report->voting) : 0 }}</td>
                             <td class="px-6 py-4 border-b text-center">
                                 @php
                                     $response = $report->responses->first();

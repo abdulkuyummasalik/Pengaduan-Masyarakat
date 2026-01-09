@@ -49,7 +49,7 @@
                     <div x-data="{ dropdownOpen: false }" class="relative">
                         <button @click="dropdownOpen = !dropdownOpen"
                             class="flex items-center text-white hover:text-orange-500 focus:outline-none transition duration-300">
-                            <img src="https://via.placeholder.com/40" alt="Profil" class="w-10 h-10 rounded-full mr-2">
+                            <img src="{{ asset('user-icon.png') }}" alt="Profil" class="w-10 h-10 rounded-full mr-2">
                             <span class="font-medium">{{ Auth::user()->name }}</span>
                             <i class="fas fa-caret-down ml-2"></i>
                         </button>
@@ -119,7 +119,7 @@
 
                     <div class="border-t border-gray-800 pt-4">
                         <div class="flex items-center px-3 py-3">
-                            <img src="https://via.placeholder.com/40" alt="Profil" class="w-10 h-10 rounded-full mr-3">
+                            <img src="{{ asset('user-icon.png') }}" alt="Profil" class="w-10 h-10 rounded-full mr-3">
                             <div>
                                 <div class="text-base font-medium text-white">{{ Auth::user()->name }}</div>
                             </div>

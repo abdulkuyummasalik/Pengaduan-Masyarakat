@@ -4,25 +4,37 @@
     <div class="absolute inset-0 bg-pattern opacity-10"></div>
     <div class="relative z-10 container mx-auto px-4 py-12">
 
+        {{-- Success Alert --}}
         @if (Session::get('success'))
-            <div class="p-4 mb-4 text-green-800 bg-green-100 border border-green-300 rounded-lg" role="alert">
-                <span class="font-medium">Berhasil!,</span> {{ Session::get('success') }}.
+            <div class="p-4 mb-6 text-green-800 bg-green-100 border border-green-300 rounded-lg flex items-center" role="alert">
+                <i class="ri-checkbox-circle-line text-2xl mr-3"></i>
+                <div>
+                    <span class="font-medium">Berhasil!</span> {{ Session::get('success') }}
+                </div>
             </div>
         @endif
 
+        {{-- Error Alert --}}
         @if (Session::get('failed'))
-            <div class="p-4 mb-4 text-red-800 bg-red-100 border border-red-300 rounded-lg" role="alert">
-                <span class="font-medium">Kesalahan!</span> {{ Session::get('failed') }}
+            <div class="p-4 mb-6 text-red-800 bg-red-100 border border-red-300 rounded-lg flex items-center" role="alert">
+                <i class="ri-error-warning-line text-2xl mr-3"></i>
+                <div>
+                    <span class="font-medium">Kesalahan!</span> {{ Session::get('failed') }}
+                </div>
             </div>
         @endif
 
+        {{-- Header --}}
         <div class="mb-12 text-center">
-            <h1 class="text-4xl md:text-6xl font-black text-orange-500 mb-4">Artikel SiPengaduan</h1>
+            <h1 class="text-4xl md:text-6xl font-black text-orange-500 mb-4">
+                Artikel SiPengaduan
+            </h1>
             <p class="text-gray-300 max-w-2xl mx-auto">
                 Temukan informasi terkini, analisis mendalam, dan berbagai perspektif tentang pengaduan masyarakat
             </p>
         </div>
 
+        {{-- Filter Section --}}
         <div class="mb-12 max-w-4xl mx-auto">
             <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                 <select id="provinceSelect"
@@ -30,72 +42,131 @@
                     <option value="all">Semua Provinsi</option>
                 </select>
                 <button id="searchButton"
-                    class="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    Cari
+                    class="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 transition">
+                    <i class="ri-search-line mr-2"></i>Cari
                 </button>
                 <button id="resetButton"
-                    class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    Reset
+                    class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition">
+                    <i class="ri-refresh-line mr-2"></i>Reset
                 </button>
             </div>
         </div>
 
-
+        {{-- Add Article Button --}}
         <div class="mt-8 mb-8 flex justify-center">
             <a href="{{ route('report.article.create') }}"
-                class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                Tambah Artikel
+                class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition shadow-lg hover:shadow-xl flex items-center font-semibold">
+                <i class="ri-add-circle-line mr-2 text-xl"></i>Tambah Artikel
             </a>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @foreach ($reports as $report)
-                <div
-                    class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl overflow-hidden hover:shadow-2xl transition-all">
-                    <div class="relative">
-                        <?php
-                        // dd($report->image);
-                        ?>
-                        <img src="{{ asset('storage/images/' . $report->image) }}" alt="Artikel Thumbnail"
-                            class="w-full h-48 object-cover">
-                        <div
-                            class="absolute top-4 right-4 bg-{{ $report->type == 'SOSIAL' ? 'orange' : 'green' }}-500 text-black px-3 py-1 rounded-full text-sm font-bold">
-                            {{ $report->type }}
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <a href="{{ route('report.article.show', $report->id) }}">
-                            <h3 class="text-xl font-bold text-green-500 mb-2 hover:underline">
-                                {{ implode(' ', array_slice(explode(' ', $report->description), 0, 3)) }}...
-                            </h3>
-                        </a>
-                        <div class="flex items-center text-gray-400 text-sm mb-4">
-                            <img src="{{ asset('storage/images/' . $report->image) }}" alt="Penulis"
-                                class="w-8 h-8 rounded-full mr-3">
-                            <span>{{ $report->user->name }}</span>
-                        </div>
-                        <div class="flex justify-between items-center text-gray-300">
-                            <div class="flex items-center space-x-4">
-                                <div class="flex items-center">
-                                    <i class="ri-eye-line mr-2 text-orange-500"></i>
-                                    <span>{{ $report->viewers }}</span>
+        {{-- Articles Grid --}}
+        @if($reports->isEmpty())
+            <div class="text-center py-20">
+                <i class="ri-article-line text-8xl text-gray-600 mb-6"></i>
+                <h3 class="text-2xl font-bold text-gray-400 mb-2">Belum Ada Artikel</h3>
+                <p class="text-gray-500 mb-6">Jadilah yang pertama membuat artikel pengaduan!</p>
+                <a href="{{ route('report.article.create') }}"
+                    class="inline-flex items-center px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                    <i class="ri-add-line mr-2"></i>Buat Artikel Pertama
+                </a>
+            </div>
+        @else
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach ($reports as $report)
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
+
+                        {{-- Image Section --}}
+                        <div class="relative h-48 bg-gradient-to-br from-gray-700 to-gray-900 overflow-hidden">
+                            @if($report->has_image)
+                                <img src="{{ $report->image_url }}"
+                                     alt="Artikel: {{ Str::limit($report->description, 30) }}"
+                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800\'><div class=\'text-center\'><i class=\'ri-image-line text-6xl text-gray-500 mb-2\'></i><p class=\'text-gray-400 text-sm\'>Gambar Tidak Tersedia</p></div></div>';">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="ri-image-line text-7xl text-gray-500 mb-3 opacity-50"></i>
+                                        <p class="text-gray-400 text-sm font-medium">Tidak Ada Gambar</p>
+                                    </div>
                                 </div>
-                                <div class="flex items-center">
-                                    <i class="ri-heart-line mr-2 text-green-500"></i>
-                                    <span>Vote ({{ count(json_decode($report->voting, true)) }})</span>
+                            @endif
+
+                            {{-- Category Badge --}}
+                            <div class="absolute top-4 right-4
+                                {{ $report->type == 'SOSIAL' ? 'bg-orange-500' : '' }}
+                                {{ $report->type == 'KEJAHATAN' ? 'bg-red-500' : '' }}
+                                {{ $report->type == 'PEMBANGUNAN' ? 'bg-green-500' : '' }}
+                                text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm">
+                                {{ $report->type }}
+                            </div>
+
+                            {{-- Overlay on Hover --}}
+                            <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </div>
+
+                        {{-- Content Section --}}
+                        <div class="p-6">
+                            <a href="{{ route('report.article.show', $report->id) }}" class="block group-article">
+                                <h3 class="text-xl font-bold text-green-500 mb-3 group-article-hover:text-green-400 transition line-clamp-2 leading-tight">
+                                    {{ Str::limit($report->description, 70) }}
+                                </h3>
+                            </a>
+
+                            {{-- Author Info --}}
+                            <div class="flex items-center text-gray-400 text-sm mb-4 mt-4 pb-4 border-b border-white/10">
+                                @if($report->user && $report->user->avatar && Storage::disk('public')->exists('avatars/' . $report->user->avatar))
+                                    <img src="{{ asset('storage/avatars/' . $report->user->avatar) }}"
+                                         alt="{{ $report->user->name }}"
+                                         class="w-9 h-9 rounded-full mr-3 object-cover border-2 border-green-500/50"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-9 h-9 rounded-full mr-3 bg-gradient-to-br from-green-500 to-green-700 hidden items-center justify-center text-white font-bold text-sm">
+                                        {{ substr($report->user->name, 0, 1) }}
+                                    </div>
+                                @else
+                                    <div class="w-9 h-9 rounded-full mr-3 bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-bold text-sm border-2 border-green-500/50">
+                                        {{ substr($report->user->name, 0, 1) }}
+                                    </div>
+                                @endif
+                                <div class="flex-1">
+                                    <p class="font-medium text-white truncate">{{ $report->user->name }}</p>
+                                    <p class="text-xs text-gray-500">{{ $report->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
-                            <form action="{{ route('report.article.vote', $report->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="flex items-center">
-                                    <i class="ri-thumb-up-line text-green-500"></i> Vote
-                                </button>
-                            </form>
+
+                            {{-- Stats & Vote --}}
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center hover:text-orange-400 transition cursor-help" title="Total Viewers">
+                                        <i class="ri-eye-line mr-1.5 text-orange-500 text-lg"></i>
+                                        <span class="text-sm font-semibold">{{ number_format($report->viewers) }}</span>
+                                    </div>
+                                    <div class="flex items-center hover:text-green-400 transition cursor-help" title="Total Votes">
+                                        <i class="ri-heart-line mr-1.5 text-green-500 text-lg"></i>
+                                        <span class="text-sm font-semibold">{{ $report->vote_count }}</span>
+                                    </div>
+                                </div>
+
+                                {{-- Vote Button --}}
+                                <form action="{{ route('report.article.vote', $report->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @php
+                                        $hasVoted = $report->hasVoted(Auth::id());
+                                    @endphp
+                                    <button type="submit"
+                                        class="flex items-center text-sm {{ $hasVoted ? 'text-green-400' : 'text-gray-400' }} hover:text-green-300 transition font-semibold px-3 py-1.5 rounded-lg {{ $hasVoted ? 'bg-green-500/20' : 'bg-white/5' }} hover:bg-green-500/30"
+                                        title="{{ $hasVoted ? 'Batalkan Vote' : 'Vote Artikel' }}">
+                                        <i class="ri-thumb-up-{{ $hasVoted ? 'fill' : 'line' }} mr-1.5 text-base"></i>
+                                        {{ $hasVoted ? 'Voted' : 'Vote' }}
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
-        </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 
     @push('style')
@@ -107,19 +178,24 @@
                 background-size: 20px 20px;
             }
 
-            /* Warna pada opsi dropdown */
-            select,
-            option {
-                background-color: rgba(255, 255, 255, 0.1);
-                /* Warna latar */
+            select, option {
+                background-color: rgba(31, 41, 55, 0.95);
                 color: white;
-                /* Warna teks */
             }
 
-            select:focus,
-            option:focus {
-                background-color: #2c2c2c;
-                /* Warna latar saat fokus */
+            select:focus, option:focus {
+                background-color: #1f2937;
+            }
+
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .group-article:hover .group-article-hover\:text-green-400 {
+                color: #4ade80;
             }
         </style>
     @endpush
@@ -131,11 +207,16 @@
             const searchButton = document.getElementById("searchButton");
             const resetButton = document.getElementById("resetButton");
 
+            // Fetch provinces
             async function fetchProvinces() {
                 try {
+                    provinceSelect.innerHTML = '<option value="all">Memuat...</option>';
                     const response = await fetch(apiURL);
+
                     if (!response.ok) throw new Error("Gagal mengambil data provinsi");
+
                     const provinces = await response.json();
+                    provinceSelect.innerHTML = '<option value="all">Semua Provinsi</option>';
 
                     provinces.forEach(province => {
                         const option = document.createElement("option");
@@ -143,62 +224,46 @@
                         option.textContent = province.name;
                         provinceSelect.appendChild(option);
                     });
+
+                    // Set selected province from URL if exists
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const selectedProvince = urlParams.get('province');
+                    if (selectedProvince) {
+                        provinceSelect.value = selectedProvince;
+                    }
                 } catch (error) {
                     console.error("Terjadi kesalahan:", error);
+                    provinceSelect.innerHTML = '<option value="all">Gagal memuat data</option>';
                 }
             }
 
+            // Search button handler
             searchButton.addEventListener("click", () => {
                 const selectedProvince = provinceSelect.value;
-
                 if (selectedProvince !== "all") {
-                    window.location.href =
-                        `{{ route('report.article.index') }}?province=${encodeURIComponent(selectedProvince)}`;
+                    window.location.href = `{{ route('report.article.index') }}?province=${encodeURIComponent(selectedProvince)}`;
+                } else {
+                    alert('Silakan pilih provinsi terlebih dahulu');
                 }
             });
 
+            // Reset button handler
             resetButton.addEventListener("click", () => {
                 window.location.href = `{{ route('report.article.index') }}`;
             });
 
+            // Initialize on page load
             document.addEventListener("DOMContentLoaded", fetchProvinces);
 
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const voteButtons = document.querySelectorAll('.vote-button');
-
-                voteButtons.forEach(button => {
-                    button.addEventListener('click', async () => {
-                        const reportId = button.getAttribute('data-report-id');
-                        const voteCountSpan = button.querySelector(
-                            'span');
-
-                        try {
-                            const response = await fetch(`/vote/${reportId}`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                },
-                                body: JSON.stringify({
-                                    action: 'upvote'
-                                })
-                            });
-
-                            if (response.ok) {
-                                const data = await response.json();
-                                voteCountSpan.textContent =
-                                    `Vote (${data.voting})`;
-                            } else {
-                                alert('Gagal memperbarui vote.');
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
-                            alert('Terjadi kesalahan.');
-                        }
-                    });
+            // Auto-hide alerts after 5 seconds
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('[role="alert"]');
+                alerts.forEach(alert => {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
                 });
-            });
+            }, 5000);
         </script>
     @endpush
 @endsection
